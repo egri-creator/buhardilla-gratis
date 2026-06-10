@@ -7,18 +7,15 @@ from src.utils.helpers import setup_logging
 log = setup_logging(__name__)
 LANDING_DIR = 'landing_pages'
 SITE = 'https://egri-creator.github.io/buhardilla-gratis'
-
 KEYWORDS = [
-    'Aislamiento Buhardilla Perdida Gratis {ciudad}',
-    'Buhardilla No Habitable Aislamiento CAE {ciudad}',
+    'Aislamiento de buhardilla perdida gratis en {ciudad}',
+    'Buhardilla no habitable: aislamiento CAE en {ciudad}',
 ]
-
-def title_case(text):
-    return ' '.join(w.capitalize() for w in text.split())
 
 def generate_page(kw, ciudad, provincia):
     os.makedirs(LANDING_DIR, exist_ok=True)
     title = kw.format(ciudad=ciudad.title())
+    display_ciudad = ciudad.title()
     title_lower = title.lower().replace(' ', '-')
     slug = re.sub(r'[^a-z0-9]+', '-', title_lower.replace('á','a').replace('é','e').replace('í','i').replace('ó','o').replace('ú','u').replace('ñ','n')).strip('-')
     ref = f'seo_{slug[:30]}'
@@ -33,7 +30,7 @@ def generate_page(kw, ciudad, provincia):
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>{title} | Buhardilla Gratis</title>
+<title>{title} | Programa CAE 2026 | Buhardilla Gratis</title>
 <meta name="description" content="{desc}">
 <meta name="keywords" content="aislamiento buhardilla gratis {ciudad}, CAE {ciudad}, buhardilla perdida {ciudad}, aislamiento gratuito {ciudad}, programa CAE {ciudad}">
 <link rel="canonical" href="{SITE}/{slug}.html">
@@ -200,10 +197,11 @@ footer li{{margin-bottom:6px;font-size:.85em;}}
 footer a{{color:#5eead4;}}
 footer .copy{{text-align:center;padding-top:32px;margin-top:32px;border-top:1px solid rgba(255,255,255,.06);font-size:.8em;}}
 
-/* Responsive */
+/* Mobile sticky CTA */
+.mobile-cta{{display:none;}}
 @media(max-width:640px){{
 .hero{{padding:120px 16px 60px;}}
-.hero-stats{{grid-template-columns:1fr;max-width:280px;}}
+.hero-stats{{grid-template-columns:1fr;max-width:220px;}}
 .hero .cta-group{{flex-direction:column;align-items:stretch;}}
 .btn-primary,.btn-secondary{{justify-content:center;}}
 .section{{padding:48px 16px;}}
@@ -213,6 +211,11 @@ footer .copy{{text-align:center;padding-top:32px;margin-top:32px;border-top:1px 
 .step-num{{position:relative;margin-bottom:12px;}}
 .step-row{{flex-direction:column;}}
 footer .fw{{grid-template-columns:1fr;}}
+.mobile-cta{{display:flex;position:fixed;bottom:0;left:0;right:0;z-index:999;background:rgba(255,255,255,.95);backdrop-filter:blur(12px);padding:12px 16px;border-top:1px solid #e2e8f0;gap:8px;}}
+.mobile-cta a{{flex:1;text-align:center;padding:12px;border-radius:50px;font-weight:700;font-size:.9em;}}
+.mobile-cta .mc-primary{{background:var(--teal);color:#fff;}}
+.mobile-cta .mc-secondary{{background:var(--navy);color:#fff;}}
+body{{padding-bottom:68px;}}
 }}
 </style>
 </head>
@@ -503,6 +506,10 @@ Tus datos están seguros. No los compartimos con terceros.
 <p style="margin-top:4px;opacity:.6;">{title} — Programa CAE 2026 — {cap_provincia}</p>
 </div>
 </footer>
+<div class="mobile-cta">
+<a class="mc-primary" href="#formulario">Verifica Gratis</a>
+<a class="mc-secondary" href="#faq">Más Info</a>
+</div>
 </body>
 </html>'''
     with open(f'{LANDING_DIR}/{slug}.html', 'w', encoding='utf-8') as f:
