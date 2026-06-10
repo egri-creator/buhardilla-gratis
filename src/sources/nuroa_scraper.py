@@ -10,14 +10,31 @@ from src.utils.helpers import setup_logging, generate_lead_id
 log = setup_logging(__name__)
 
 BASE_URL = 'https://www.nuroa.es'
-HEADERS = {
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-    'Accept-Language': 'es-ES,es;q=0.9',
-}
 
-KEYWORDS = ['buhardilla', 'desvan', 'atico']
-MAX_PAGES = 2
+USER_AGENTS = [
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:126.0) Gecko/20100101 Firefox/126.0',
+]
+_ua_idx = 0
+_session = None
+
+def _get_session():
+    global _session, _ua_idx
+    if _session is None:
+        _session = requests.Session()
+    _session.headers.update({
+        'User-Agent': USER_AGENTS[_ua_idx % len(USER_AGENTS)],
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+        'Accept-Language': 'es-ES,es;q=0.9',
+        'Referer': 'https://www.google.com/',
+    })
+    _ua_idx += 1
+    return _session
+
+KEYWORDS = ['buhardilla', 'atico']
+MAX_PAGES = 1
 
 def slugify(s):
     t = s.lower().strip()
@@ -128,7 +145,8 @@ def search_city(keyword, city_name):
         if page > 1:
             url += f'?page={page}'
         try:
-            r = requests.get(url, headers=HEADERS, timeout=15)
+            sess = _get_session()
+            r = sess.get(url, timeout=20)
             if r.status_code != 200:
                 break
         except Exception as e:
@@ -145,7 +163,7 @@ def search_city(keyword, city_name):
 
         if not leads:
             break
-        time.sleep(0.3)
+        time.sleep(1.5)
 
     log.info(f'Nuroa {keyword}/{city_name}: {len(all_leads)}')
     return all_leads
@@ -153,12 +171,20 @@ def search_city(keyword, city_name):
 def batch_complete():
     total = []
     seen = set()
+    # Skip 'desvan' - returns 0 everywhere, wastes time
+    active_kws = [kw for kw in KEYWORDS if kw != 'desvan']
+    saved = 0
     for ciudad, key, provincia in Config.ALL_MUNICIPIOS():
-        for kw in KEYWORDS:
+        for kw in active_kws:
             leads = search_city(kw, ciudad)
             for l in leads:
                 if l['url'] not in seen:
                     seen.add(l['url'])
                     total.append(l)
+        # Save progressively
+        if len(total) > saved + 50:
+            saved = len(total)
+            from src.utils.helpers import save_json
+            save_json('data/leads/nuroa_partial.json', total)
     log.info(f'Nuroa total: {len(total)} anuncios unicos')
     return total

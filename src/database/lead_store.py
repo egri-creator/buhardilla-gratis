@@ -56,12 +56,16 @@ def save_lead(lead, force_local=False):
     save_json(filepath, existing)
     csv_path = f'{LEADS_DIR}/leads_{today}.csv'
     existing_csv = []
+    fieldnames = list(lead.keys())
     if os.path.exists(csv_path):
         with open(csv_path, 'r', encoding='utf-8') as f:
-            existing_csv = list(csv.DictReader(f))
+            reader = csv.DictReader(f)
+            existing_csv = list(reader)
+            if existing_csv:
+                fieldnames = list(dict.fromkeys(list(existing_csv[0].keys()) + list(lead.keys())))
     existing_csv.append(lead)
     with open(csv_path, 'w', encoding='utf-8', newline='') as f:
-        writer = csv.DictWriter(f, fieldnames=lead.keys())
+        writer = csv.DictWriter(f, fieldnames=fieldnames, extrasaction='ignore')
         writer.writeheader()
         writer.writerows(existing_csv)
     log.info(f'Lead {lead_id} guardado en local ({len(existing)} total)')

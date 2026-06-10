@@ -5,7 +5,7 @@ import base64, os
 from datetime import datetime, timedelta
 from src.utils.gmail_helper import search_messages, get_message_thread, send_email as gmail_send
 from src.utils.helpers import setup_logging
-from src.delivery.email_campaign import load_campaign_db, save_campaign_db
+from src.delivery.email_campaign import load_campaign_db, save_campaign_db, CAMPAIGN_DB
 
 log = setup_logging(__name__)
 

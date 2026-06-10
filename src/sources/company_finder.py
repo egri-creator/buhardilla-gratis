@@ -93,7 +93,7 @@ def find_installer_companies():
 def batch_complete():
     companies = find_installer_companies()
     if companies:
-        existing = load_companies() if __import__('os').path.exists(COMPANIES_FILE) else []
+        existing = load_json(COMPANIES_FILE) if __import__('os').path.exists(COMPANIES_FILE) else []
         existing_names = {c['nombre'].lower() for c in existing}
         new = [c for c in companies if c['nombre'].lower() not in existing_names]
         save_json(COMPANIES_FILE, existing + new)

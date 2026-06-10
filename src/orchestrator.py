@@ -14,7 +14,7 @@ from src.database.lead_store import save_lead
 from src.sources import (
     catastro_wfs, admin_fincas, idealista_alerts, google_alerts, company_finder,
     seo_landing_generator, blog_automation, gbp_generator,
-    nuroa_scraper, ine_api,
+    nuroa_scraper, ine_api, b2b_companies,
 )
 from src.sources.ovc_enricher import batch_enrich
 from src.sources.cluster_detector import detect_clusters
@@ -46,10 +46,11 @@ def pipeline_completo():
 
     todos_los_leads = []
 
-    log.info('\n--- FASE 1: EXTRACCION (Catastro + Portales + Alertas) ---')
+    log.info('\n--- FASE 1: EXTRACCION (Catastro + Portales + Alertas + B2B) ---')
     fuentes = [
         ('Catastro WFS', catastro_wfs.batch_complete),
         ('Admin Fincas', admin_fincas.batch_complete),
+        ('B2B Companies', b2b_companies.batch_complete),
         ('Idealista', idealista_alerts.batch_complete),
         ('Google Alerts', google_alerts.monitor_alerts),
         ('Nuroa (Fotocasa/Idealista)', nuroa_scraper.batch_complete),
@@ -82,7 +83,7 @@ def pipeline_completo():
     run_source('Blog', blog_automation.batch_complete)
     run_source('GBP', gbp_generator.batch_complete)
 
-    log.info('\n--- FASE 5: B2B + MERCADO ---')
+    log.info('\n--- FASE 5: INSTALADORES + MERCADO ---')
     run_source('Company Finder', company_finder.batch_complete)
     run_source('INE Market', ine_api.batch_complete)
 
