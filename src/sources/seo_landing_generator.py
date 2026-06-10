@@ -1,0 +1,419 @@
+"""SEO pages — 194 landing pages professional design with inline SVGs,
+correct Spanish punctuation (¿), drop caps, modern CSS.
+"""
+import os, re
+from datetime import datetime
+from src.config.config_template import Config
+from src.utils.helpers import setup_logging
+
+log = setup_logging(__name__)
+LANDING_DIR = 'landing_pages'
+
+KEYWORDS = [
+    'aislamiento buhardilla perdida gratis {ciudad}',
+    'buhardilla no habitable aislamiento CAE {ciudad}',
+]
+
+SITE = 'https://egri-creator.github.io/buhardilla-gratis'
+
+def generate_page(kw, ciudad, provincia):
+    os.makedirs(LANDING_DIR, exist_ok=True)
+    title = kw.format(ciudad=ciudad)
+    slug = re.sub(r'[^a-z0-9]+', '-', title.lower().replace('á','a').replace('é','e').replace('í','i').replace('ó','o').replace('ú','u').replace('ñ','n')).strip('-')
+    ref = f'seo_{slug[:30]}'
+    today = datetime.now().strftime('%Y-%m-%d')
+    year = datetime.now().strftime('%Y')
+    cap_ciudad = ciudad.title()
+    cap_provincia = provincia.title()
+
+    html = f'''<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{title}</title>
+<meta name="description" content="{title} en {cap_ciudad}. Programa CAE del Gobierno de España. Aislamiento gratuito para buhardillas no habitables (perdidas). Instalación en 1 día. Verifica tu elegibilidad.">
+<meta name="keywords" content="aislamiento buhardilla gratis {ciudad}, CAE {ciudad}, buhardilla perdida {ciudad}, {kw.format(ciudad=ciudad)}">
+<link rel="canonical" href="{SITE}/{slug}.html">
+<meta property="og:title" content="{title}">
+<meta property="og:description" content="Programa CAE del Gobierno. Aislamiento gratuito de buhardilla no habitable en {cap_ciudad}.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="{SITE}/{slug}.html">
+<meta property="og:image" content="{SITE}/og-image.jpg">
+<meta name="robots" content="index, follow">
+<meta name="theme-color" content="#0f2b46">
+<script type="application/ld+json">{{
+"@context":"https://schema.org",
+"@type":"FAQPage",
+"mainEntity":[{{
+"@type":"Question",
+"name":"¿Qué es el programa CAE?",
+"acceptedAnswer":{{"@type":"Answer","text":"El Certificado de Ahorro Energético (CAE) es un mecanismo del Gobierno de España (Real Decreto 36/2023) que permite a las comercializadoras de energía financiar obras de eficiencia energética en hogares. El aislamiento de buhardillas no habitables es una de las actuaciones subvencionables al 100%."}}
+}},{{
+"@type":"Question",
+"name":"¿Cuánto cuesta el aislamiento en {cap_ciudad}?",
+"acceptedAnswer":{{"@type":"Answer","text":"Cero euros. El programa CAE cubre materiales, mano de obra y gestión. No pagas nada, no adelantas nada."}}
+}},{{
+"@type":"Question",
+"name":"¿Mi buhardilla es habitable, puedo optar?",
+"acceptedAnswer":{{"@type":"Answer","text":"No. Este programa es exclusivamente para buhardillas no habitables (perdidas, desvanes, trasteros bajo cubierta). Si tu buhardilla está reformada como vivienda, no cumples los requisitos."}}
+}},{{
+"@type":"Question",
+"name":"¿Qué requisitos necesito en {cap_ciudad}?",
+"acceptedAnswer":{{"@type":"Answer","text":"Ser propietario de la vivienda, buhardilla no habitable, construcción anterior a 2007, vivienda en {cap_ciudad} o municipios cercanos de {cap_provincia}."}}
+}}]
+}}</script>
+<style>
+:root{{--navy:#0f2b46;--teal:#1a7a5c;--gold:#c9a94e;--light:#f4f7fa;--gray:#6b7a88;--dark:#1a2744;--shadow:0 4px 24px rgba(15,43,70,.08);--radius:12px;}}
+*{{margin:0;padding:0;box-sizing:border-box;}}
+html{{scroll-behavior:smooth;}}
+body{{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;color:#2d3748;line-height:1.7;background:#fff;}}
+img{{max-width:100%;height:auto;}}
+a{{color:var(--teal);text-decoration:none;transition:color .2s;}}
+a:hover{{color:#147a5c;}}
+
+/* Navigation */
+nav{{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(255,255,255,.95);backdrop-filter:blur(12px);border-bottom:1px solid rgba(15,43,70,.08);padding:0 24px;height:64px;display:flex;align-items:center;justify-content:space-between;}}
+nav .logo{{font-weight:800;font-size:1.2em;color:var(--navy);letter-spacing:-.5px;}}
+nav .logo span{{color:var(--teal);}}
+nav .nav-cta{{background:var(--teal);color:#fff!important;padding:10px 24px;border-radius:50px;font-size:.85em;font-weight:600;}}
+nav .nav-cta:hover{{background:#147a5c;}}
+
+/* Hero */
+.hero{{padding:140px 24px 80px;background:linear-gradient(135deg,var(--navy) 0%,#1a3a5e 50%,#2a4a6e 100%);color:#fff;text-align:center;position:relative;overflow:hidden;}}
+.hero::before{{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:radial-gradient(circle at 30% 40%,rgba(26,122,92,.15) 0%,transparent 60%),radial-gradient(circle at 70% 60%,rgba(201,169,78,.08) 0%,transparent 50%);pointer-events:none;}}
+.hero .badge{{display:inline-flex;align-items:center;gap:8px;background:rgba(201,169,78,.15);border:1px solid rgba(201,169,78,.3);padding:8px 20px;border-radius:50px;font-size:.8em;color:var(--gold);margin-bottom:28px;position:relative;}}
+.hero h1{{font-size:clamp(1.8em,5vw,3em);font-weight:800;line-height:1.15;max-width:780px;margin:0 auto 20px;position:relative;letter-spacing:-1px;}}
+.hero .subtitle{{font-size:clamp(1em,2.5vw,1.2em);opacity:.85;max-width:640px;margin:0 auto 32px;line-height:1.6;position:relative;}}
+.hero .cta-group{{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;position:relative;}}
+.btn-primary{{display:inline-flex;align-items:center;gap:10px;background:var(--teal);color:#fff;padding:16px 40px;border-radius:50px;font-size:1.05em;font-weight:700;transition:all .25s;box-shadow:0 4px 16px rgba(26,122,92,.35);}}
+.btn-primary:hover{{background:#147a5c;transform:translateY(-2px);box-shadow:0 6px 24px rgba(26,122,92,.45);color:#fff;}}
+.btn-secondary{{display:inline-flex;align-items:center;gap:10px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#fff;padding:16px 32px;border-radius:50px;font-size:1.05em;font-weight:600;transition:all .25s;}}
+.btn-secondary:hover{{background:rgba(255,255,255,.18);color:#fff;}}
+.hero .trust-row{{display:flex;gap:24px;justify-content:center;flex-wrap:wrap;margin-top:36px;opacity:.7;font-size:.8em;position:relative;}}
+.hero .trust-row span{{display:flex;align-items:center;gap:6px;}}
+
+/* Sections */
+.section{{padding:72px 24px;max-width:960px;margin:0 auto;}}
+.section-alt{{background:var(--light);}}
+.section-wide{{max-width:100%;padding:72px 24px;}}
+.section-wide > div{{max-width:960px;margin:0 auto;}}
+.label{{display:inline-block;font-size:.75em;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:var(--teal);margin-bottom:12px;}}
+h2{{font-size:clamp(1.4em,3.5vw,2em);color:var(--navy);font-weight:800;line-height:1.2;margin-bottom:16px;letter-spacing:-.5px;}}
+h2 .highlight{{color:var(--teal);}}
+
+/* Drop cap — first paragraph after h2 in intro section */
+.intro p:first-of-type::first-letter{{float:left;font-size:3.8em;line-height:.85;padding-right:12px;font-weight:800;color:var(--teal);font-family:Georgia,'Times New Roman',serif;}}
+
+/* Benefits */
+.benefits-grid{{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:24px;margin-top:32px;}}
+.benefit-card{{background:#fff;border-radius:var(--radius);padding:32px 24px;box-shadow:var(--shadow);text-align:center;transition:transform .25s,box-shadow .25s;border:1px solid rgba(15,43,70,.04);}}
+.benefit-card:hover{{transform:translateY(-4px);box-shadow:0 12px 40px rgba(15,43,70,.12);}}
+.benefit-card .icon{{width:56px;height:56px;margin:0 auto 18px;display:flex;align-items:center;justify-content:center;border-radius:16px;background:linear-gradient(135deg,rgba(26,122,92,.08),rgba(26,122,92,.02));}}
+.benefit-card h3{{font-size:1.05em;color:var(--navy);margin-bottom:8px;font-weight:700;}}
+.benefit-card p{{font-size:.92em;color:var(--gray);line-height:1.5;}}
+
+/* Steps */
+.steps{{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:24px;margin-top:32px;counter-reset:step;}}
+.step{{background:#fff;border-radius:var(--radius);padding:28px 24px;box-shadow:var(--shadow);border:1px solid rgba(15,43,70,.04);position:relative;padding-left:68px;}}
+.step::before{{counter-increment:step;content:counter(step);position:absolute;left:20px;top:24px;width:32px;height:32px;background:var(--teal);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85em;}}
+.step h3{{font-size:1em;color:var(--navy);margin-bottom:4px;font-weight:700;}}
+.step p{{font-size:.9em;color:var(--gray);line-height:1.5;}}
+
+/* Highlight box */
+.highlight-box{{background:linear-gradient(135deg,#f0f7f4,#e8f3ef);border-left:4px solid var(--teal);border-radius:0 var(--radius) var(--radius) 0;padding:24px 28px;margin:24px 0;font-size:.95em;}}
+.highlight-box strong{{color:var(--navy);}}
+
+/* Trust badges */
+.gov-badges{{display:flex;gap:16px;flex-wrap:wrap;margin:28px 0;}}
+.gov-badge{{display:inline-flex;align-items:center;gap:8px;background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:10px 18px;font-size:.85em;color:var(--gray);box-shadow:0 1px 4px rgba(0,0,0,.03);}}
+
+/* FAQ */
+.faq-list{{margin-top:28px;}}
+.faq-item{{border:1px solid #e2e8f0;border-radius:var(--radius);margin-bottom:12px;overflow:hidden;}}
+.faq-item summary{{padding:20px 24px;cursor:pointer;font-weight:600;color:var(--navy);font-size:1em;display:flex;align-items:center;justify-content:space-between;list-style:none;}}
+.faq-item summary::-webkit-details-marker{{display:none;}}
+.faq-item summary::after{{content:'+';font-size:1.4em;color:var(--teal);font-weight:300;transition:transform .2s;}}
+.faq-item[open] summary::after{{content:'−';}}
+.faq-item .faq-body{{padding:0 24px 20px;color:var(--gray);line-height:1.7;font-size:.95em;}}
+
+/* Form */
+.form-section{{background:linear-gradient(135deg,var(--navy),#1a3a5e);color:#fff;text-align:center;}}
+.form-section h2{{color:#fff;}}
+.form-section p{{opacity:.85;margin-bottom:24px;}}
+.form-card{{background:#fff;border-radius:var(--radius);padding:36px;max-width:520px;margin:0 auto;box-shadow:0 8px 40px rgba(0,0,0,.2);}}
+.form-card input,.form-card button{{width:100%;padding:14px 16px;margin:8px 0;border:1px solid #e2e8f0;border-radius:8px;font-size:1em;font-family:inherit;transition:border-color .2s;}}
+.form-card input:focus{{outline:none;border-color:var(--teal);box-shadow:0 0 0 3px rgba(26,122,92,.12);}}
+.form-card button{{background:var(--teal);color:#fff;border:none;font-weight:700;font-size:1.05em;cursor:pointer;transition:background .2s;margin-top:12px;}}
+.form-card button:hover{{background:#147a5c;}}
+.form-card .disclaimer{{font-size:.78em;color:#94a3b8;margin-top:14px;display:flex;align-items:center;justify-content:center;gap:6px;}}
+
+/* Footer */
+footer{{background:var(--dark);color:#94a3b8;padding:48px 24px;text-align:center;font-size:.85em;line-height:1.8;}}
+footer strong{{color:#cbd5e1;}}
+footer a{{color:var(--teal);}}
+footer .sep{{color:#4a5568;margin:0 6px;}}
+footer .footer-links{{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:8px;}}
+
+/* Mobile */
+@media(max-width:640px){{
+.hero{{padding:120px 16px 60px;}}
+.hero .cta-group{{flex-direction:column;align-items:stretch;}}
+.btn-primary,.btn-secondary{{justify-content:center;}}
+.section{{padding:48px 16px;}}
+.benefits-grid{{grid-template-columns:1fr;}}
+.steps{{grid-template-columns:1fr;}}
+.gov-badges{{flex-direction:column;}}
+.form-card{{padding:24px 16px;}}
+}}
+</style>
+</head>
+<body>
+<nav>
+<div class="logo">Buhardilla<span>Gratis</span></div>
+<a class="nav-cta" href="#formulario">Verifica gratis</a>
+</nav>
+
+<section class="hero">
+<div class="badge">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+Programa CAE 2026 — Real Decreto 36/2023
+</div>
+<h1>{title}</h1>
+<p class="subtitle">100% subvencionado por el Gobierno de España. Instalación profesional en 2-4 horas sin obras. Sin adelantar dinero.</p>
+<div class="cta-group">
+<a class="btn-primary" href="#formulario">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+Verifica si eres elegible
+</a>
+<a class="btn-secondary" href="#faq">Más información</a>
+</div>
+<div class="trust-row">
+<span>✅ Sin coste</span>
+<span>🔒 Sin compromiso</span>
+<span>📋 100% legal</span>
+<span>🏠 97 municipios</span>
+</div>
+</section>
+
+<section class="section intro">
+<span class="label">¿Qué es?</span>
+<h2>Programa CAE: <span class="highlight">Aislamiento gratuito</span> de buhardilla en {cap_ciudad}</h2>
+<p>¿Tienes una buhardilla no habitable (perdida, desván o trastero bajo cubierta) en tu vivienda de {cap_ciudad} o cualquier municipio de {cap_provincia}? Puedes aislarla <strong>sin coste alguno</strong> gracias al programa de Certificados de Ahorro Energético (CAE) del Gobierno de España.</p>
+<p>Este programa, regulado por el <a href="https://www.boe.es/buscar/act.php?id=BOE-A-2023-2535" target="_blank" rel="nofollow">Real Decreto 36/2023</a> e integrado en el Sistema Nacional de Obligaciones de Eficiencia Energética (SNOEE), obliga a las comercializadoras de energía a financiar mejoras de eficiencia en hogares. El aislamiento de buhardillas no habitables es una de las actuaciones con mayor retorno energético.</p>
+<div class="highlight-box">⚠️ <strong>Importante:</strong> Este programa es exclusivamente para buhardillas <strong>no habitables</strong> (perdidas). Si tu buhardilla está reformada como vivienda, esta opción no es válida para ti.</div>
+</section>
+
+<section class="section-alt section-wide">
+<div>
+<span class="label">Beneficios</span>
+<h2>¿Por qué aislar tu buhardilla con el programa CAE?</h2>
+<div class="benefits-grid">
+<div class="benefit-card">
+<div class="icon">
+<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><path d="M12 18V6"/></svg>
+</div>
+<h3>Sin coste</h3>
+<p>100% financiado por el programa CAE. No pagas nada ni adelantas dinero. Sin letra pequeña.</p>
+</div>
+<div class="benefit-card">
+<div class="icon">
+<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+</div>
+<h3>Instalación en 2-4h</h3>
+<p>Insuflación de lana mineral. Sin obras, sin polvo, sin ruido. No necesitas salir de casa.</p>
+</div>
+<div class="benefit-card">
+<div class="icon">
+<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+</div>
+<h3>Hasta 40% de ahorro</h3>
+<p>En calefacción y aire acondicionado. Resultados desde el primer mes. Amortización inmediata.</p>
+</div>
+<div class="benefit-card">
+<div class="icon">
+<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+</div>
+<h3>Certificado energético</h3>
+<p>Mejora la calificación de tu vivienda. Aumenta su valor de mercado. 30 años de garantía.</p>
+</div>
+</div>
+</div>
+</section>
+
+<section class="section">
+<span class="label">¿Cómo funciona?</span>
+<h2>Tres pasos para <span class="highlight">aislar gratis</span> tu buhardilla</h2>
+<div class="steps">
+<div class="step">
+<h3>Solicita tu verificación</h3>
+<p>Rellena el formulario con tus datos. Un asesor evaluará tu caso sin coste ni compromiso.</p>
+</div>
+<div class="step">
+<h3>Evaluación técnica</h3>
+<p>Verificamos que tu buhardilla cumple los requisitos del programa CAE. Te informamos en 24h.</p>
+</div>
+<div class="step">
+<h3>Instalación express</h3>
+<p>Nuestro equipo aísla tu buhardilla en 2-4 horas. Empiezas a ahorrar desde el día 1.</p>
+</div>
+</div>
+</section>
+
+<section class="section-alt section-wide">
+<div>
+<span class="label">Marco legal</span>
+<h2>Real Decreto 36/2023 — <span class="highlight">Base legal</span> del programa CAE</h2>
+<p>Los Certificados de Ahorro Energético (CAE) están regulados por el <a href="https://www.boe.es/buscar/act.php?id=BOE-A-2023-2535" target="_blank" rel="nofollow">Real Decreto 36/2023, de 24 de enero</a>, del Ministerio para la Transición Ecológica y el Reto Demográfico (MITECO). Este marco legal establece el Sistema Nacional de Obligaciones de Eficiencia Energética (SNOEE) que obliga a las empresas comercializadoras de energía a contribuir al ahorro energético.</p>
+<p>Según el <a href="https://www.miteco.gob.es/es/ministerio/planes-estrategicos/eficiencia-energetica/cae.html" target="_blank" rel="nofollow">MITECO</a>, el aislamiento de cerramientos (incluyendo suelos de buhardillas no habitables) es una de las actuaciones estandarizadas con mayor potencial de ahorro. Los organismos acreditados por <a href="https://www.enac.es" target="_blank" rel="nofollow">ENAC</a> verifican cada actuación y emiten los certificados correspondientes.</p>
+<div class="gov-badges">
+<span class="gov-badge">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+BOE — Real Decreto 36/2023
+</span>
+<span class="gov-badge">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+MITECO — Plan CAE
+</span>
+<span class="gov-badge">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+ENAC — Verificación independiente
+</span>
+</div>
+</div>
+</section>
+
+<section class="section" id="faq">
+<span class="label">FAQ</span>
+<h2>Preguntas frecuentes sobre el <span class="highlight">CAE en {cap_ciudad}</span></h2>
+<div class="faq-list">
+<details class="faq-item">
+<summary>¿Qué es el programa CAE?</summary>
+<div class="faq-body">El Certificado de Ahorro Energético (CAE) es un mecanismo oficial del Gobierno de España, regulado por el Real Decreto 36/2023. Permite a las empresas energéticas cumplir con sus obligaciones de eficiencia financiando obras de aislamiento en hogares. Tú te beneficias del aislamiento sin coste; las empresas obtienen los certificados de ahorro.</div>
+</details>
+<details class="faq-item">
+<summary>¿Cuánto cuesta el aislamiento en {cap_ciudad}?</summary>
+<div class="faq-body">Cero euros. Todo el proceso — materiales, mano de obra, gestión documental y auditoría ENAC — está cubierto al 100% por el programa CAE. No hay costes ocultos ni letra pequeña.</div>
+</details>
+<details class="faq-item">
+<summary>¿Qué requisitos necesito?</summary>
+<div class="faq-body">1) Ser propietario de la vivienda. 2) Tener una buhardilla NO habitable (perdida, desván, trastero bajo cubierta). 3) La vivienda debe ser anterior a 2007. 4) Estar en {cap_ciudad} o municipios cercanos de {cap_provincia}.</div>
+</details>
+<details class="faq-item">
+<summary>¿Cómo se realiza la instalación?</summary>
+<div class="faq-body">Mediante insuflación de lana mineral (roca o vidrio) sobre el suelo de la buhardilla. Es un proceso limpio, sin obras, que se completa en 2-4 horas. No necesitas vaciar la buhardilla ni salir de casa durante la instalación.</div>
+</details>
+<details class="faq-item">
+<summary>¿Mi buhardilla es habitable. Puedo optar?</summary>
+<div class="faq-body">No. Este programa está diseñado exclusivamente para buhardillas no habitables (perdidas). Si tu buhardilla está reformada como vivienda, no cumples los requisitos del programa CAE para aislamiento de suelos.</div>
+</details>
+<details class="faq-item">
+<summary>¿Por qué el gobierno lo financia?</summary>
+<div class="faq-body">Las viviendas con buhardillas no aisladas pierden hasta un 30% del calor en invierno. El gobierno, a través del Real Decreto 36/2023, obliga a las grandes comercializadoras de energía a financiar obras de eficiencia como contrapartida a sus emisiones. Es más eficiente para el país aislar viviendas que generar más energía. Todos ganan: tú ahorras en tu factura, las empresas cumplen sus obligaciones, y el país reduce sus emisiones de CO₂.</div>
+</details>
+</div>
+</section>
+
+<section class="form-section section-wide" id="formulario">
+<div>
+<span class="label" style="color:var(--gold)">Comprueba ahora</span>
+<h2>¿Tu buhardilla es válida para el programa CAE?</h2>
+<p>Descúbrelo en 30 segundos. Un asesor de <strong>Buhardilla Gratis</strong> te llamará en menos de 24h para verificar tu elegibilidad. Sin compromiso.</p>
+<div class="form-card">
+<form action="https://formsubmit.co/captacionleads25@gmail.com" method="POST" target="_blank">
+<input type="hidden" name="_subject" value="Lead SEO - {title}">
+<input type="hidden" name="_captcha" value="false">
+<input type="hidden" name="_next" value="{SITE}/gracias.html">
+<input type="text" name="nombre" placeholder="Tu nombre" required>
+<input type="tel" name="telefono" placeholder="Teléfono" required>
+<input type="email" name="email" placeholder="Email (opcional)">
+<input type="text" name="ciudad" value="{cap_ciudad}" readonly>
+<button type="submit">Comprobar elegibilidad</button>
+<div class="disclaimer">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+Tus datos están seguros. No los compartimos con terceros.
+</div>
+</form>
+</div>
+<p style="margin-top:16px;opacity:.7;font-size:.85em;">📞 También puedes llamarnos directamente</p>
+</div>
+</section>
+
+<section class="section">
+<div style="text-align:center;font-size:.9em;color:var(--gray);line-height:1.8;">
+<p style="margin-bottom:8px;">Fuentes oficiales:</p>
+<p>
+<a href="https://www.boe.es/buscar/act.php?id=BOE-A-2023-2535" target="_blank" rel="nofollow">BOE — Real Decreto 36/2023</a>
+<span class="sep" style="color:#cbd5e0;">|</span>
+<a href="https://www.miteco.gob.es/es/ministerio/planes-estrategicos/eficiencia-energetica/cae.html" target="_blank" rel="nofollow">MITECO — Plan CAE</a>
+<span class="sep" style="color:#cbd5e0;">|</span>
+<a href="https://www.enac.es" target="_blank" rel="nofollow">ENAC — Verificación</a>
+</p>
+</div>
+</section>
+
+<footer>
+<p><strong>{title}</strong></p>
+<p>Buhardilla Gratis — Programa CAE 2026 — {cap_provincia}</p>
+<div class="footer-links">
+<a href="https://www.boe.es/buscar/act.php?id=BOE-A-2023-2535" target="_blank" rel="nofollow">Real Decreto 36/2023</a>
+<span class="sep">·</span>
+<a href="https://www.miteco.gob.es/es/ministerio/planes-estrategicos/eficiencia-energetica/cae.html" target="_blank" rel="nofollow">MITECO</a>
+<span class="sep">·</span>
+<a href="https://www.enac.es" target="_blank" rel="nofollow">ENAC</a>
+</div>
+<p style="margin-top:12px;font-size:.8em;opacity:.6;">© {year} Buhardilla Gratis. Todos los derechos reservados.</p>
+</footer>
+</body>
+</html>'''
+    with open(f'{LANDING_DIR}/{slug}.html', 'w', encoding='utf-8') as f:
+        f.write(html)
+    return slug
+
+def batch_complete():
+    pages = []
+    for ciudad, key, provincia in Config.ALL_MUNICIPIOS():
+        for kw in KEYWORDS:
+            slug = generate_page(kw, ciudad, provincia)
+            pages.append(slug)
+    sitemap = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+    for p in pages:
+        sitemap += f'  <url><loc>{SITE}/{p}.html</loc></url>\n'
+    sitemap += '</urlset>'
+    with open(f'{LANDING_DIR}/sitemap.xml', 'w', encoding='utf-8') as f:
+        f.write(sitemap)
+    with open(f'{LANDING_DIR}/gracias.html', 'w', encoding='utf-8') as f:
+        f.write(f'''<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gracias — Buhardilla Gratis</title>
+<meta name="robots" content="noindex">
+<style>
+:root{{--navy:#0f2b46;--teal:#1a7a5c;--gold:#c9a94e;--light:#f4f7fa;}}
+*{{margin:0;padding:0;box-sizing:border-box;}}
+body{{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:linear-gradient(135deg,var(--navy),#1a3a5e);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;color:#fff;}}
+.card{{background:#fff;border-radius:16px;padding:48px 36px;max-width:520px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.25);}}
+.icon-circle{{width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,#e8f5e9,#c8e6c9);display:flex;align-items:center;justify-content:center;margin:0 auto 24px;}}
+h1{{color:var(--teal);font-size:1.8em;font-weight:800;margin-bottom:12px;}}
+p{{color:#4a5568;line-height:1.7;margin-bottom:8px;font-size:1em;}}
+.badge{{display:inline-block;background:var(--light);color:var(--gray);padding:6px 16px;border-radius:50px;font-size:.78em;margin-top:20px;}}
+.detail{{font-size:.85em;color:#94a3b8;margin-top:16px;}}
+</style>
+</head>
+<body>
+<div class="card">
+<div class="icon-circle">
+<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+</div>
+<h1>¡Gracias!</h1>
+<p>Hemos recibido tu solicitud correctamente.</p>
+<p>Un asesor de <strong>Buhardilla Gratis</strong> se pondrá en contacto contigo en las próximas <strong>24 horas</strong> para verificar tu elegibilidad y resolver cualquier duda.</p>
+<div class="badge">Programa CAE 2026 — Real Decreto 36/2023</div>
+<p class="detail">Mientras tanto, puedes consultar nuestras <a href="{SITE}/blog/">guías sobre el programa CAE</a>.</p>
+</div>
+</body>
+</html>''')
+    log.info(f'SEO: {len(pages)} páginas generadas ({Config.TOTAL_MUNICIPIOS()} municipios)')
+    return pages
